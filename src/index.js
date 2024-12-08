@@ -3,7 +3,7 @@ import {initialCards} from './scripts/cards.js';
 const placesList = document.querySelector('.places__list');
 
 
-function addCards(link, name, handleLikeClick ) {
+function addCards(link, name ) {
   const cardTemplate = document.querySelector('#card-template').content;
   const templateElement = cardTemplate.querySelector('.places__item ').cloneNode(true);
   templateElement.querySelector('.card__image').src = link;
@@ -11,11 +11,12 @@ function addCards(link, name, handleLikeClick ) {
   const deleteButton = templateElement.querySelector('.card__delete-button');
   deleteButton.addEventListener('click', function () {
     deleteCard(templateElement);
-    handleLikeClick(evt)
-    
 });
+  const likeButton = templateElement.querySelector('.card__like-button');
 
+  handleLikeClick(likeButton)
   return templateElement;
+  
 }
 
 
@@ -125,24 +126,13 @@ formNewCard.addEventListener('submit', handleFormSubmitNewCard);
 
 // like .card__like-button_is-active
 
-const likeButtons = document.querySelectorAll('.card__like-button');
 
-/*
- likeButtons.forEach(function (likeButton) {
-  likeButton.addEventListener('click', function (){
-    likeButton.classList.toggle('card__like-button_is-active');
-  })
- })
-  */
 
- function handleLikeClick(evt) {
-  evt.target.classList.toggle('card__like-button_is-active');
+ function handleLikeClick(likeButton) {
+  likeButton.addEventListener('click', function (evt) {
+    evt.target.classList.toggle('card__like-button_is-active');
+  });
+ 
  }
 
- likeButtons.forEach(function (likeButton) {
-  likeButton.addEventListener('click', handleLikeClick);
- })
 
- likeButtons.forEach(function (likeButton) {
-  likeButton.addEventListener('click', handleLikeClick);
- })
