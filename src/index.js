@@ -3,10 +3,11 @@ import {initialCards} from './scripts/cards.js';
 const placesList = document.querySelector('.places__list');
 
 
-function addCards(link, name ) {
+function addCards(link, name) {
   const cardTemplate = document.querySelector('#card-template').content;
   const templateElement = cardTemplate.querySelector('.places__item ').cloneNode(true);
   templateElement.querySelector('.card__image').src = link;
+  templateElement.querySelector('.card__image').alt = name;
   templateElement.querySelector('.card__title').textContent = name;
   const deleteButton = templateElement.querySelector('.card__delete-button');
   deleteButton.addEventListener('click', function () {
@@ -14,9 +15,9 @@ function addCards(link, name ) {
 });
   const likeButton = templateElement.querySelector('.card__like-button');
 
-  handleLikeClick(likeButton)
-  return templateElement;
+  handleLikeClick(likeButton);
   
+  return templateElement; 
 }
 
 
@@ -38,7 +39,7 @@ const popupEdit = document.querySelector('.popup_type_edit');
 
 const popupNewCard = document.querySelector('.popup_type_new-card');
 
-const popupImage = document.querySelector('.popup_type_image');
+
 
 const popups = document.querySelectorAll('.popup')
 const popupsClose = document.querySelectorAll('.popup__close')
@@ -120,6 +121,8 @@ function handleFormSubmitNewCard(evt) {
   evt.preventDefault();
   placesList.prepend(addCards(inputLink.value, inputCardName.value));
   closePopup(popupNewCard);
+  inputLink.value = '';
+  inputCardName.value = '';
 }
 
 formNewCard.addEventListener('submit', handleFormSubmitNewCard);
@@ -132,7 +135,26 @@ formNewCard.addEventListener('submit', handleFormSubmitNewCard);
   likeButton.addEventListener('click', function (evt) {
     evt.target.classList.toggle('card__like-button_is-active');
   });
- 
  }
 
 
+
+ // popup image
+
+ const popupImage = document.querySelector('.popup_type_image');
+ const popupImageImage = popupImage.querySelector('.popup__image');  
+ const popupImageCaption = popupImage.querySelector('.popup__caption');
+
+ function openPopupImage(evt) {
+  popupImageImage.src = evt.target.src;
+  popupImageCaption.textContent = evt.target.alt;
+  openPopup(popupImage);
+ }
+
+ placesList.addEventListener('click', function (evt) {
+  if (evt.target.classList.contains('card__image')) {
+    openPopupImage(evt);
+  }
+ })
+
+ 
