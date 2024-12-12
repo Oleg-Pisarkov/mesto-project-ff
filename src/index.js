@@ -4,6 +4,8 @@ import { addCards } from './components/card.js';
 import { openPopup } from './components/modal.js';
 import { closePopup } from './components/modal.js';
 import { closePopupEsc } from './components/modal.js';
+import { deleteCard } from './components/card.js';
+import { handleLikeClick } from './components/card.js';
 
 const placesList = document.querySelector('.places__list');
 const popupEdit = document.querySelector('.popup_type_edit'); 
@@ -24,24 +26,25 @@ const popupImage = document.querySelector('.popup_type_image');
 const popupImageImage = popupImage.querySelector('.popup__image');  
 const popupImageCaption = popupImage.querySelector('.popup__caption');
 
+
 const renderCard = function () {
   initialCards.forEach(function (card) {
-    placesList.append(addCards(card.link, card.name));
+    placesList.append(addCards(card.link, card.name, handleLikeClick, openPopupImage, deleteCard));
   });
 }
 
 renderCard()
     
-
-popupsClose.forEach(function(popupClose) {
-  popupClose.addEventListener('click', function () {
-    closePopup(popupEdit);
-    closePopup(popupNewCard);
-    closePopup(popupImage);
+popups.forEach(function(popup){
+  const closeButton = popup.querySelector('.popup__close')
+  closeButton.addEventListener('click', function () {
+    closePopup(popup);
   })
 })
 
 popupEditButton.addEventListener('click', function () {
+  inputName.value = profileTitle.textContent;
+  inputDescription.value = profileDescription.textContent;
   openPopup(popupEdit);
 });
 
@@ -53,23 +56,22 @@ popups.forEach(function(popup) {
   popup.addEventListener('click', function (evt) {
     if (evt.target.classList.contains('popup_is-opened')) {
       closePopup(popup);
-      document.removeEventListener('keydown', closePopupEsc);
     }
   })
 })
   
-function handleFormSubmit(evt) {
+function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   profileTitle.textContent = inputName.value;
   profileDescription.textContent = inputDescription.value;
   closePopup(popupEdit);
 }
 
-formEditProfile.addEventListener('submit', handleFormSubmit);
+formEditProfile.addEventListener('submit', handleProfileFormSubmit);
 
 function handleFormSubmitNewCard(evt) {
   evt.preventDefault();
-  placesList.prepend(addCards(inputLink.value, inputCardName.value));
+  placesList.prepend(addCards(inputLink.value, inputCardName.value, handleLikeClick, openPopupImage, deleteCard));
   closePopup(popupNewCard);
   inputLink.value = '';
   inputCardName.value = '';
@@ -77,16 +79,10 @@ function handleFormSubmitNewCard(evt) {
 
 formNewCard.addEventListener('submit', handleFormSubmitNewCard);
 
- function openPopupImage(evt) {
+  function openPopupImage(evt) {
   popupImageImage.src = evt.target.src;
   popupImageCaption.textContent = evt.target.alt;
   openPopup(popupImage);
  }
-
- placesList.addEventListener('click', function (evt) {
-  if (evt.target.classList.contains('card__image')) {
-    openPopupImage(evt);
-  }
- })
-
  
+

@@ -11,12 +11,7 @@ export function closePopup(popup) {
 //ЗАКРЫТИЕ МОДАЛЬНОГО ОКНА ESC
 export function closePopupEsc(evt) {
   if (evt.key === "Escape") {
-    const popupEdit = document.querySelector('.popup_type_edit'); 
-    const popupNewCard = document.querySelector('.popup_type_new-card');
-    const popupImage = document.querySelector('.popup_type_image');
-    closePopup(popupEdit);
-    closePopup(popupNewCard);
-    closePopup(popupImage);
+    closePopup(document.querySelector('.popup_is-opened'));
   }
 }
 
