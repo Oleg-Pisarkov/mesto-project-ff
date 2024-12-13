@@ -1,7 +1,7 @@
 
 // ДОБАВЛЕНИЕ КАРТОЧКИ
 
-export function addCards(link, name, likeCallback, openPopupCallback, deleteCallback) {
+export function addCards(link, name, callBacks) {
   const cardTemplate = document.querySelector('#card-template').content;
   const templateElement = cardTemplate.querySelector('.places__item ').cloneNode(true);
   templateElement.querySelector('.card__title').textContent = name;
@@ -10,19 +10,21 @@ export function addCards(link, name, likeCallback, openPopupCallback, deleteCall
   const cardImage = templateElement.querySelector('.card__image');
   cardImage.src = link;
   cardImage.alt = name;
+ 
+  
 
   //обработчик лайка
   likeButton.addEventListener('click', function() {
-    likeCallback(likeButton);
+    callBacks.likeCallback(likeButton);
   })
   
   //обработчик открытия картинки
   cardImage.addEventListener('click', function (evt) {
-    openPopupCallback(evt);
+    callBacks.openPopupCallback(evt);
   });
   //обработчик удаления карточки
   deleteButton.addEventListener('click', function () {
-    deleteCallback(templateElement);
+    callBacks.deleteCallback(templateElement);
 });
 
   return templateElement; 

@@ -25,11 +25,15 @@ const inputLink = formNewCard.querySelector('.popup__input_type_url');
 const popupImage = document.querySelector('.popup_type_image');
 const popupImageImage = popupImage.querySelector('.popup__image');  
 const popupImageCaption = popupImage.querySelector('.popup__caption');
-
+const callBacks = {
+  likeCallback: handleLikeClick,
+  openPopupCallback: openPopupImage,
+  deleteCallback: deleteCard,
+}
 
 const renderCard = function () {
   initialCards.forEach(function (card) {
-    placesList.append(addCards(card.link, card.name, handleLikeClick, openPopupImage, deleteCard));
+    placesList.append(addCards(card.link, card.name, callBacks));
   });
 }
 
@@ -71,7 +75,7 @@ formEditProfile.addEventListener('submit', handleProfileFormSubmit);
 
 function handleFormSubmitNewCard(evt) {
   evt.preventDefault();
-  placesList.prepend(addCards(inputLink.value, inputCardName.value, handleLikeClick, openPopupImage, deleteCard));
+  placesList.prepend(addCards(inputLink.value, inputCardName.value, callBacks));
   closePopup(popupNewCard);
   inputLink.value = '';
   inputCardName.value = '';
