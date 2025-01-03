@@ -25,3 +25,10 @@
     line-height: 17px;
   }
 }
+
+.button_inactive {
+  opacity: 0.2;
+  background: #fff;
+  color: black;
+  border: 1px solid #000;
+}

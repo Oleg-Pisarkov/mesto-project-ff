@@ -17,3 +17,23 @@
     padding: 30px 20px;
   }
 }
+
+.popup__delete-card {
+  width: 430px;
+  height: 181px;
+  border-radius: 10px;
+  background-color: #fff;
+  position: relative;
+  box-sizing: border-box;
+  padding: 34px 36px;
+}
+
+.popup__edit_avatar {
+  width: 430px;
+  height: 272px;
+  border-radius: 10px;
+  background-color: #fff;
+  position: relative;
+  box-sizing: border-box;
+  padding: 34px 36px;
+}
