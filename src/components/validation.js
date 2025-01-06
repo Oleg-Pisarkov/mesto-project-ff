@@ -78,14 +78,13 @@ export const enableValidation = (validationConfig) => {
   });
 }
 
-export const clearValidation = (validationConfig) => {
-  const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
-  formList.forEach((formElement) => {
-    const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
-    const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
-    inputList.forEach((inputElement) => {
-      hideInputError(formElement, inputElement, validationConfig);
-    });
-    toggleButtonState(inputList, buttonElement, validationConfig);
+export const clearValidation = (formElement, validationConfig) => {
+  const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+  const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
+
+  inputList.forEach((inputElement) => {
+    hideInputError(formElement, inputElement, validationConfig);
   });
+  toggleButtonState(inputList, buttonElement, validationConfig);
+  
 }

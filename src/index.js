@@ -2,11 +2,9 @@ import './pages/index.css'; // добавьте импорт главного ф
 import { addCards } from './scripts/card.js';
 import { openPopup } from './scripts/modal.js';
 import { closePopup } from './scripts/modal.js';
-import { deleteCard } from './scripts/card.js';
-import { handleLikeClick } from './scripts/card.js';
 import { enableValidation } from './components/validation.js';
 import { clearValidation } from './components/validation.js';
-import { featchEditProfile, featchNewCard, featchEditAvatar, loadUserData } from './components/api.js';
+import { featchEditProfile, featchNewCard, featchEditAvatar, loadUserData, featchDeleteCard, featchLikeCard, featchDislikeCard } from './components/api.js';
 
 
 const placesList = document.querySelector('.places__list');
@@ -33,11 +31,18 @@ const avatarButton = document.querySelector('.avatar__button');
 const newCardButton = document.querySelector('.new_card-button');
 const profileButton = document.querySelector('.profile__button');
 const profileImage = document.querySelector('.profile__image');
+const popupDeleteCard = document.querySelector('.popup_type_delete');
+const buttonDeleteCard = popupDeleteCard.querySelector('.popup__button');
+
+let userId = null;
+let cardId = null;
+let card = null;
 
 const callBacks = {
   likeCallback: handleLikeClick,
   openPopupCallback: openPopupImage,
-  deleteCallback: deleteCard,
+  openDeletePopupCallback: openDeletePopup,
+  deleteCardCallback: deleteCard
 };
 
 const validationConfig = {
@@ -49,10 +54,6 @@ const validationConfig = {
   errorClass: 'popup__error_visible'
 };
 
-let userId = null;
-let cardId = null;
-
-
 loadUserData()
 .then(([userData, cards]) => {
   profileTitle.textContent = userData.name;
@@ -61,8 +62,9 @@ loadUserData()
   userId = userData._id;
   
   cards.forEach((card) => {
-    cardId = card._id;
+   cardId = card._id;
    placesList.append(addCards(card.link, card.name, cardId, card.likes, userId, card.owner._id, callBacks));
+  
   });
 })
 .catch((err) => {
@@ -80,20 +82,20 @@ popupEditButton.addEventListener('click', function () {
   inputName.value = profileTitle.textContent;
   inputDescription.value = profileDescription.textContent;
   openPopup(popupEdit);
-  profileButton.textContent = 'Сохранить';
-  clearValidation(validationConfig);
+  
+  clearValidation(popupEdit, validationConfig);
 });
 
 popupNewCardButton.addEventListener('click', function () {
   openPopup(popupNewCard);
-  newCardButton.textContent = 'Сохранить';
-  clearValidation(validationConfig);
+  
+  clearValidation(popupNewCard, validationConfig);
 }); 
 
 popupEditAvatarButton.addEventListener('click', function () {
   openPopup(formAvatarProfile);
-  avatarButton.textContent = 'Сохранить';
-  clearValidation(validationConfig);
+  
+  clearValidation(formAvatarProfile, validationConfig);
 });
 
 popups.forEach(function(popup) {
@@ -106,7 +108,7 @@ popups.forEach(function(popup) {
   
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  
+  profileButton.textContent = 'Сохранение....';
   const nameValue = inputName.value;
   const descriptionValue = inputDescription.value
 
@@ -114,65 +116,131 @@ function handleProfileFormSubmit(evt) {
     .then((data) => {
       profileTitle.textContent = data.name;
       profileDescription.textContent = data.about;
-
+      closePopup(popupEdit);
 })
     .catch((err) => {
       console.log(err);
 })
-
-  profileButton.textContent = 'Сохранение....';
-  closePopup(popupEdit);
+    .finally(() => {
+      profileButton.textContent = 'Сохранить';
+    })
 }
 
 formEditProfile.addEventListener('submit', handleProfileFormSubmit);
 
 function handleFormSubmitAvatar(evt) {
   evt.preventDefault();
-  
+  avatarButton.textContent = 'Сохранение....';
   featchEditAvatar(inputAvatar.value)
   .then((data) => {
     inputAvatar.value = data.avatar; 
     profileImage.src = inputAvatar.value;
     inputAvatar.value = '';
+    closePopup(formAvatarProfile);
   })
   .catch((err) => {
     console.log(err);
   })
-
-  avatarButton.textContent = 'Сохранение....';
-  closePopup(formAvatarProfile);
+  .finally(() => {
+    avatarButton.textContent = 'Сохранить';
+  })
 }
 
 formAvatarProfile.addEventListener('submit', handleFormSubmitAvatar);
 
 function handleFormSubmitNewCard(evt) {
   evt.preventDefault();
+  newCardButton.textContent = 'Сохранение....';
   
-  placesList.prepend(addCards(inputLink.value, inputCardName.value, cardId, 0, userId, userId, callBacks));
+
+ 
   
   featchNewCard(inputCardName.value, inputLink.value)
   .then((data) => {
     inputCardName.value = data.name;
     inputLink.value = data.link; 
-    inputLink.value = '';
-    inputCardName.value = '';
+    cardId = data._id;
+    closePopup(popupNewCard);
+    placesList.prepend(addCards(inputLink.value, inputCardName.value, cardId, 0, userId, userId, callBacks));
+    
   })
   .catch((err) => {
     console.log(err);
-  });
-
-  newCardButton.textContent = 'Сохранение....';
-  closePopup(popupNewCard);
+  })
+  .finally(() => {
+    inputLink.value = '';
+    inputCardName.value = '';
+    newCardButton.textContent = 'Сохранить';
+   
+  })
+  
 }
 
 formNewCard.addEventListener('submit', handleFormSubmitNewCard);
 
   function openPopupImage(evt) {
   popupImageImage.src = evt.target.src;
+  popupImageImage.alt = evt.target.alt;
   popupImageCaption.textContent = evt.target.alt;
   openPopup(popupImage);
  };
  
+ // ЛАЙК КАРТОЧКИ
+ function handleLikeClick(likeButton, cardId, cardLikes) {
+  if(likeButton.classList.contains('card__like-button_is-active')) {
+    featchDislikeCard(cardId)
+    .then((data) => {
+      likeButton.classList.remove('card__like-button_is-active');
+      cardLikes.textContent = data.likes.length;
+      if(data.likes.length === 0) {
+        cardLikes.textContent = '';
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  } else {
+    featchLikeCard(cardId)
+    .then((data) => {
+      likeButton.classList.add('card__like-button_is-active');
+      cardLikes.textContent = data.likes.length;
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  } 
+ };
+
+// Удаление карточки
+
+function deleteCard(element, cardId, cardOwnerId, userId) {
+  if(cardOwnerId === userId) {
+    featchDeleteCard(cardId)
+  .then(() => {
+    element.remove();
+    closePopup(popupDeleteCard);
+  })
+  .catch((err) => {
+    console.log(err);
+  })
+  .finally(() => {
+    cardId = null;
+  })
+  }
+};
+    
+function openDeletePopup(element, cardId, cardOwnerId, userId) {
+  card = element;
+  userId = userId;
+
+  openPopup(popupDeleteCard);
+  
+  buttonDeleteCard.addEventListener('click', function () {
+    deleteCard(element, cardId, cardOwnerId, userId);
+  })
+ };
+
+
  enableValidation(validationConfig);
 
 
