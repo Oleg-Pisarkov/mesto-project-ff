@@ -36,13 +36,12 @@ const buttonDeleteCard = popupDeleteCard.querySelector('.popup__button');
 
 let userId = null;
 let cardId = null;
-let card = null;
+
 
 const callBacks = {
   likeCallback: handleLikeClick,
   openPopupCallback: openPopupImage,
   openDeletePopupCallback: openDeletePopup,
-  deleteCardCallback: deleteCard
 };
 
 const validationConfig = {
@@ -60,16 +59,16 @@ loadUserData()
   profileDescription.textContent = userData.about;
   profileImage.src = userData.avatar;
   userId = userData._id;
-  
+
   cards.forEach((card) => {
    cardId = card._id;
-   placesList.append(addCards(card.link, card.name, cardId, card.likes, userId, card.owner._id, callBacks));
+   placesList.append(addCards(card.link, card.name, card._id, card.likes, userId, card.owner._id, callBacks));
   
   });
 })
 .catch((err) => {
   console.log(err);
-})
+});
 
 popups.forEach(function(popup){
   const closeButton = popup.querySelector('.popup__close')
@@ -162,14 +161,13 @@ function handleFormSubmitNewCard(evt) {
     cardId = data._id;
     closePopup(popupNewCard);
     placesList.prepend(addCards(inputLink.value, inputCardName.value, cardId, 0, userId, userId, callBacks));
-    
+    inputLink.value = '';
+    inputCardName.value = '';
   })
   .catch((err) => {
     console.log(err);
   })
   .finally(() => {
-    inputLink.value = '';
-    inputCardName.value = '';
     newCardButton.textContent = 'Сохранить';
    
   })
@@ -186,7 +184,9 @@ formNewCard.addEventListener('submit', handleFormSubmitNewCard);
  };
  
  // ЛАЙК КАРТОЧКИ
+ 
  function handleLikeClick(likeButton, cardId, cardLikes) {
+  
   if(likeButton.classList.contains('card__like-button_is-active')) {
     featchDislikeCard(cardId)
     .then((data) => {
@@ -198,8 +198,11 @@ formNewCard.addEventListener('submit', handleFormSubmitNewCard);
     })
     .catch((err) => {
       console.log(err);
-    })
+    });
+
+    
   } else {
+    
     featchLikeCard(cardId)
     .then((data) => {
       likeButton.classList.add('card__like-button_is-active');
@@ -207,49 +210,36 @@ formNewCard.addEventListener('submit', handleFormSubmitNewCard);
     })
     .catch((err) => {
       console.log(err);
-    })
+    });
   } 
  };
+ 
 
 // Удаление карточки
 
-function deleteCard(element, cardId, cardOwnerId, userId) {
-  if(cardOwnerId === userId) {
-    featchDeleteCard(cardId)
+
+let cardDelete = null;
+let cardIdDelete = null;
+
+    
+function openDeletePopup(element, cardId) {
+  cardDelete = element;
+  cardIdDelete = cardId;
+
+  openPopup(popupDeleteCard);
+  
+ };
+
+
+buttonDeleteCard.addEventListener('click', function () {
+  featchDeleteCard(cardIdDelete)
   .then(() => {
-    element.remove();
+    cardDelete.remove();
     closePopup(popupDeleteCard);
   })
   .catch((err) => {
     console.log(err);
   })
-  .finally(() => {
-    cardId = null;
-  })
-  }
-};
-    
-function openDeletePopup(element, cardId, cardOwnerId, userId) {
-  card = element;
-  userId = userId;
-
-  openPopup(popupDeleteCard);
-  
-  buttonDeleteCard.addEventListener('click', function () {
-    deleteCard(element, cardId, cardOwnerId, userId);
-  })
- };
-
+});
 
  enableValidation(validationConfig);
-
-
-
-
-
- 
-
-
-
-
-

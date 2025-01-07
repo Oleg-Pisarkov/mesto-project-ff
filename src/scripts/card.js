@@ -15,6 +15,8 @@ export function addCards(link, name, cardId, likes, userId, cardOwnerId, callBac
     cardLikes.textContent = '';
   }
 
+  
+  
   cardImage.src = link;
   cardImage.alt = name;
 
@@ -33,9 +35,11 @@ export function addCards(link, name, cardId, likes, userId, cardOwnerId, callBac
   });
 
   //обработчик  открытия модального окна удаления карточки
+  
   deleteButton.addEventListener('click', function () {
-    callBacks.openDeletePopupCallback(templateElement, cardId, cardOwnerId, userId);
+    callBacks.openDeletePopupCallback(templateElement, cardId);
   });
+  
   
   return templateElement; 
 }
