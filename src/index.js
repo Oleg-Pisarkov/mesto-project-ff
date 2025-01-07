@@ -37,7 +37,6 @@ const buttonDeleteCard = popupDeleteCard.querySelector('.popup__button');
 let userId = null;
 let cardId = null;
 
-
 const callBacks = {
   likeCallback: handleLikeClick,
   openPopupCallback: openPopupImage,
@@ -62,7 +61,7 @@ loadUserData()
 
   cards.forEach((card) => {
    cardId = card._id;
-   placesList.append(addCards(card.link, card.name, card._id, card.likes, userId, card.owner._id, callBacks));
+   placesList.append(addCards(card.link, card.name, cardId, card.likes, userId, card.owner._id, callBacks));
   
   });
 })
@@ -150,17 +149,14 @@ formAvatarProfile.addEventListener('submit', handleFormSubmitAvatar);
 function handleFormSubmitNewCard(evt) {
   evt.preventDefault();
   newCardButton.textContent = 'Сохранение....';
-  
 
- 
-  
   featchNewCard(inputCardName.value, inputLink.value)
   .then((data) => {
     inputCardName.value = data.name;
     inputLink.value = data.link; 
     cardId = data._id;
     closePopup(popupNewCard);
-    placesList.prepend(addCards(inputLink.value, inputCardName.value, cardId, 0, userId, userId, callBacks));
+    placesList.prepend(addCards(inputLink.value, inputCardName.value, cardId, data.likes, userId, userId, callBacks));
     inputLink.value = '';
     inputCardName.value = '';
   })
@@ -169,9 +165,7 @@ function handleFormSubmitNewCard(evt) {
   })
   .finally(() => {
     newCardButton.textContent = 'Сохранить';
-   
   })
-  
 }
 
 formNewCard.addEventListener('submit', handleFormSubmitNewCard);
@@ -199,10 +193,7 @@ formNewCard.addEventListener('submit', handleFormSubmitNewCard);
     .catch((err) => {
       console.log(err);
     });
-
-    
-  } else {
-    
+  }else{
     featchLikeCard(cardId)
     .then((data) => {
       likeButton.classList.add('card__like-button_is-active');
@@ -210,13 +201,11 @@ formNewCard.addEventListener('submit', handleFormSubmitNewCard);
     })
     .catch((err) => {
       console.log(err);
-    });
+    })
   } 
  };
  
-
 // Удаление карточки
-
 
 let cardDelete = null;
 let cardIdDelete = null;
@@ -227,9 +216,7 @@ function openDeletePopup(element, cardId) {
   cardIdDelete = cardId;
 
   openPopup(popupDeleteCard);
-  
  };
-
 
 buttonDeleteCard.addEventListener('click', function () {
   featchDeleteCard(cardIdDelete)

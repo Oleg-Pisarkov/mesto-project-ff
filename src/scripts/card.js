@@ -9,16 +9,20 @@ export function addCards(link, name, cardId, likes, userId, cardOwnerId, callBac
   const likeButton = templateElement.querySelector('.card__like-button');
   const cardImage = templateElement.querySelector('.card__image');
   const cardLikes = templateElement.querySelector('.card__likes');
-  
+  const likesId = likes.map((like) => like._id);
+
+  cardImage.src = link;
+  cardImage.alt = name;
+
+
   cardLikes.textContent = likes.length;
   if(likes.length === 0) {
     cardLikes.textContent = '';
   }
-
-  
-  
-  cardImage.src = link;
-  cardImage.alt = name;
+ 
+  if(likesId.includes(userId)) {
+   likeButton.classList.add('card__like-button_is-active');
+  }
 
   if (cardOwnerId !== userId) {
     templateElement.querySelector('.card__delete-button').remove(); 
